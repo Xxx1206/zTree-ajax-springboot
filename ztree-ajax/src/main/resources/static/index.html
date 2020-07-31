@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:overflow="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>index访问测试页面</title>
+    <link rel="stylesheet" href="css/zTreeStyle/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="js/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="js/jquery.ztree.core.js"></script>
+
+    <script type="text/javascript">
+
+        //zTree的设置
+        var s = {
+            data:{
+                simpleData:{
+                    enable:true,
+                    idKey: "areaId",
+                    pIdKey: "parentId"
+                },
+                key:{
+                    //保存节点名称的属性名
+                    name:"areaName"
+                }
+            }
+        }
+
+        function method() {
+            $.ajax({
+                type:"GET",
+                url:"http://localhost:8090/testArea",
+                // data参数是可选的，有多种写法，也可以直接在url参数拼接参数上去，例如这样：url:"getUser?id="+value,
+                // data:[{"id":1,"pId":0,"name":"安徽省"},{"id":11,"pId":1,"name":"合肥市"}],
+
+                async:false, // 异步（$.ajax后面的代码是不是跟$.ajx里面的代码一起执行），默认为true
+                dataType:"json", // 返回浏览器的数据类型，指定是json格式，前端这里才可以解析json数据
+                success:function(data){
+
+                    //将服务器返回的JSON字符串转为json对象
+                    //方式一:存在注入执行代码的风险
+                    var obj = eval(data);
+
+                    //方式二：有错误，暂未解决
+                    // jsonObj = JSON.parse(data);
+
+                    //obj指的就是zTree的对象，初始化zTree树的方法
+                    var zobj = $.fn.zTree.init($("#tree"),s,obj)
+
+                    //初始时展开zTree树的所有节点
+                    zobj.expandAll(true);
+                },
+                error:function(){
+                    //浏览器控制台显示返回内容（建议使用）
+                    console.log("发生错误");
+                    //弹框显示返回内容
+                    alert("发生错误");
+                }
+            });
+        }
+
+        //页面加载完后执行这段代码
+        $(function () {
+            method();
+        })
+
+
+    </script>
+</head>
+
+
+<body>
+<h3>zTree插件测试程序</h3>
+
+<!-- DOM的容器，用于生成zTree树 -->
+<div>
+    <ul id="tree" class="ztree" style="width: 230px"; overflow:auto;></ul>
+</div>
+
+</body>
+</html>
